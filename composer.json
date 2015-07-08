@@ -18,7 +18,7 @@
     }
   ],
   "autoload": {
-    "psr-4": {"C2iS\\SocialWall\\": "src/"}
+    "psr-0": {"C2iS\\Bundle\\SocialWallBundle\\": "src/"}
   },
   "minimum-stability": "dev",
   "require": {
