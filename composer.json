@@ -20,6 +20,7 @@
   "autoload": {
     "psr-0": { "C2is\\Bundle\\ReservITBundle": "" }
   },
+  "target-dir": "C2is/Bundle/ReservITBundle",
   "minimum-stability": "dev",
   "require": {
     "c2is/socialwall": "dev-master"
