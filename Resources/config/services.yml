@@ -1,0 +1,15 @@
+parameters:
+    c2is.social_wall.class: C2iS\SocialWall\SocialWall
+    c2is.social_wall.manager.class: C2is\Bundle\SocialWallBundle\Manager\SocialWallManager
+    c2is.social_wall.cache_provider.class: C2iS\SocialWall\Cache\FileCacheProvider
+
+services:
+    c2is.social_wall:
+        class: %c2is.social_wall.class%
+        arguments: [%c2is_social_wall%]
+    c2is.social_wall.manager:
+        class: %c2is.social_wall.manager.class%
+        arguments: [@c2is.social_wall, @c2is.social_wall.cache_provider, %c2is_social_wall%]
+    c2is.social_wall.cache_provider:
+        class: %c2is.social_wall.cache_provider.class%
+        arguments: ['%kernel.cache_dir%/socialwall/', %c2is_social_wall.cache.duration%]
