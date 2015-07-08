@@ -47,7 +47,7 @@ class SocialWallManager
     public function getFacebookItems($limit = null)
     {
         $facebook = $this->socialWall->getNetwork('facebook');
-        $config = $this->config['social_networks']['facebook'];
+        $config   = $this->config['social_networks']['facebook'];
         $results  = $facebook->getSocialItems(
             array(
                 'user_id' => $config['query'],
@@ -66,7 +66,7 @@ class SocialWallManager
     public function getTwitterItems($limit = null)
     {
         $twitter = $this->socialWall->getNetwork('twitter');
-        $config = $this->config['social_networks']['twitter'];
+        $config  = $this->config['social_networks']['twitter'];
         $results = $twitter->getSocialItems(
             array(
                 'query' => explode(',', $config['query']),
@@ -85,7 +85,7 @@ class SocialWallManager
     public function getFlickrItems($limit = null)
     {
         $flickr  = $this->socialWall->getNetwork('flickr');
-        $config = $this->config['social_networks']['flickr'];
+        $config  = $this->config['social_networks']['flickr'];
         $results = $flickr->getSocialItems(
             array(
                 'tags'  => $config['query'],
@@ -103,7 +103,7 @@ class SocialWallManager
     public function getInstagramItems($limit = null)
     {
         $instagram = $this->socialWall->getNetwork('instagram');
-        $config = $this->config['social_networks']['instagram'];
+        $config    = $this->config['social_networks']['instagram'];
         $results   = $instagram->getSocialItems(
             array(
                 'tag'   => $config['query'],
@@ -121,7 +121,7 @@ class SocialWallManager
     public function getGooglePlusItems($limit = null)
     {
         $googlePlus = $this->socialWall->getNetwork('google_plus');
-        $config = $this->config['social_networks']['google_plus'];
+        $config     = $this->config['social_networks']['google_plus'];
         $results    = $googlePlus->getSocialItems(
             array(
                 'user_id' => $config['query'],
@@ -139,7 +139,7 @@ class SocialWallManager
     public function getYoutubeItems($limit = null)
     {
         $youtube = $this->socialWall->getNetwork('youtube');
-        $config = $this->config['social_networks']['youtube'];
+        $config  = $this->config['social_networks']['youtube'];
         $results = $youtube->getSocialItems(
             array(
                 'playlistId' => $config['query'],
