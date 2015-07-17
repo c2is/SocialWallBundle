@@ -13,3 +13,4 @@ services:
     c2is.social_wall.cache_provider:
         class: %c2is.social_wall.cache_provider.class%
         arguments: ['%kernel.cache_dir%/socialwall/', %c2is_social_wall.cache.duration%]
+        
