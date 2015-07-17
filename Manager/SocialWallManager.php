@@ -4,6 +4,7 @@ namespace C2is\Bundle\SocialWallBundle\Manager;
 
 use C2iS\SocialWall\Cache\CacheProviderInterface;
 use C2iS\SocialWall\SocialWall;
+use C2iS\SocialWall\Model\SocialItemResult;
 
 /**
  * Class SocialWallManager
@@ -184,7 +185,7 @@ class SocialWallManager
      */
     protected function getItems($results, $limit = null)
     {
-        if (false === $results) {
+        if (false === $results || !$results instanceof SocialItemResult) {
             return array();
         }
 
