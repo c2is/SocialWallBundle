@@ -1,6 +1,7 @@
 {
   "name": "c2is/socialwall-bundle",
   "description": "Bundle integrating the C2iS SocialWall component into Symfony2",
+  "license": "GPL-3.0+",
   "keywords": [
     "social",
     "api",
