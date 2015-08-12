@@ -2,6 +2,7 @@
 
 namespace C2is\Bundle\SocialWallBundle\Manager;
 
+use C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException;
 use C2iS\SocialWall\Cache\CacheProviderInterface;
 use C2iS\SocialWall\SocialWall;
 use C2iS\SocialWall\Model\SocialItemResult;
@@ -42,16 +43,26 @@ class SocialWallManager
     }
 
     /**
+     * @param string $userId
+     * @param int    $limit
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getFacebookItems($limit = null)
+    public function getFacebookItems($userId = null, $limit = null)
     {
         $facebook = $this->socialWall->getNetwork('facebook');
         $config   = $this->config['social_networks']['facebook'];
-        $results  = $facebook->getSocialItems(
+
+        if (!$userId && !isset($config['user_id']) || !($userId = $config['user_id'])) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for facebook.'
+            );
+        }
+
+        $results = $facebook->getItemsForUser(
             array(
-                'user_id' => $config['query'],
+                'user_id' => $userId,
                 'limit'   => null !== $limit ? $limit : $config['limit'],
                 'lang'    => 'fr_FR',
             )
@@ -61,16 +72,79 @@ class SocialWallManager
     }
 
     /**
+     * @param string $userId
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getTwitterItems($limit = null)
+    public function getFacebookNumberOfSubscribers($userId = null)
+    {
+        $facebook = $this->socialWall->getNetwork('facebook');
+        $config   = $this->config['social_networks']['facebook'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for facebook.'
+            );
+        }
+
+        return $facebook->getNumberOfSubscribers(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $userId
+     * @param int    $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getTwitterItemsForUser($userId = null, $limit = null)
     {
         $twitter = $this->socialWall->getNetwork('twitter');
         $config  = $this->config['social_networks']['twitter'];
-        $results = $twitter->getSocialItems(
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for twitter.'
+            );
+        }
+
+        $results = $twitter->getItemsForUser(
             array(
-                'query' => explode(',', $config['query']),
+                'user_id' => $userId,
+                'limit'   => null !== $limit ? $limit : $config['limit'],
+                'lang'    => 'fr',
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param array $tags
+     * @param int   $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getTwitterItemsForTags(array $tags = null, $limit = null)
+    {
+        $twitter = $this->socialWall->getNetwork('twitter');
+        $config  = $this->config['social_networks']['twitter'];
+
+        if (!$tags && !(isset($config['tags']) && ($tags = $config['tags']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "tags". You must pass this parameter to the method or add it to the "tags" configuration option for twitter.'
+            );
+        }
+
+        $results = $twitter->getItemsForTag(
+            array(
+                'query' => $tags,
                 'limit' => null !== $limit ? $limit : $config['limit'],
                 'lang'  => 'fr',
             )
@@ -80,52 +154,74 @@ class SocialWallManager
     }
 
     /**
+     * @param string $userId
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getFlickrItems($limit = null)
+    public function getTwitterNumberOfItems($userId = null)
     {
-        $flickr  = $this->socialWall->getNetwork('flickr');
-        $config  = $this->config['social_networks']['flickr'];
-        $results = $flickr->getSocialItems(
+        $twitter = $this->socialWall->getNetwork('twitter');
+        $config  = $this->config['social_networks']['twitter'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for twitter.'
+            );
+        }
+
+        return $twitter->getNumberOfItems(
             array(
-                'tags'  => $config['query'],
-                'limit' => null !== $limit ? $limit : $config['limit'],
+                'user_id' => $userId,
             )
         );
-
-        return $this->getItems($results, $limit);
     }
 
     /**
+     * @param string $userId
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getInstagramItems($limit = null)
+    public function getTwitterNumberOfSubscribers($userId = null)
     {
-        $instagram = $this->socialWall->getNetwork('instagram');
-        $config    = $this->config['social_networks']['instagram'];
-        $results   = $instagram->getSocialItems(
+        $twitter = $this->socialWall->getNetwork('twitter');
+        $config  = $this->config['social_networks']['twitter'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for twitter.'
+            );
+        }
+
+        return $twitter->getNumberOfSubscribers(
             array(
-                'tag'   => $config['query'],
-                'limit' => null !== $limit ? $limit : $config['limit'],
+                'user_id' => $userId,
             )
         );
-
-        return $this->getItems($results, $limit);
     }
 
     /**
+     * @param string $userId
+     * @param int    $limit
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getGooglePlusItems($limit = null)
+    public function getFlickrItemsForUser($userId = null, $limit = null)
     {
-        $googlePlus = $this->socialWall->getNetwork('google_plus');
-        $config     = $this->config['social_networks']['google_plus'];
-        $results    = $googlePlus->getSocialItems(
+        $flickr = $this->socialWall->getNetwork('flickr');
+        $config = $this->config['social_networks']['flickr'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for flickr.'
+            );
+        }
+
+        $results = $flickr->getItemsForUser(
             array(
-                'user_id' => $config['query'],
+                'user_id' => $userId,
                 'limit'   => null !== $limit ? $limit : $config['limit'],
             )
         );
@@ -134,16 +230,285 @@ class SocialWallManager
     }
 
     /**
+     * @param array $tags
+     * @param int   $limit
+     *
      * @return array
-     * @throws \C2iS\SocialWall\Exception\InvalidParametersException
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getYoutubeItems($limit = null)
+    public function getFlickrItemsForTags(array $tags = null, $limit = null)
+    {
+        $flickr = $this->socialWall->getNetwork('flickr');
+        $config = $this->config['social_networks']['flickr'];
+
+        if (!$tags && !(isset($config['tags']) && ($tags = $config['tags']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "tags". You must pass this parameter to the method or add it to the "tags" configuration option for flickr.'
+            );
+        }
+
+        $results = $flickr->getItemsForUser(
+            array(
+                'tags'  => $tags,
+                'limit' => null !== $limit ? $limit : $config['limit'],
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getFlickrNumberOfItems($userId = null)
+    {
+        $flickr = $this->socialWall->getNetwork('flickr');
+        $config = $this->config['social_networks']['flickr'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for flickr.'
+            );
+        }
+
+        return $flickr->getNumberOfItems(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getFlickrNumberOfSubscribers($userId = null)
+    {
+        $flickr = $this->socialWall->getNetwork('flickr');
+        $config = $this->config['social_networks']['flickr'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for flickr.'
+            );
+        }
+
+        return $flickr->getNumberOfSubscribers(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $userId
+     * @param int    $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getInstagramItemsForUser($userId = null, $limit = null)
+    {
+        $instagram = $this->socialWall->getNetwork('instagram');
+        $config    = $this->config['social_networks']['instagram'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for instagram.'
+            );
+        }
+
+        $results = $instagram->getItemsForUser(
+            array(
+                'user_id' => $userId,
+                'limit'   => null !== $limit ? $limit : $config['limit'],
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param string $tag
+     * @param int    $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getInstagramItemsForTag($tag = null, $limit = null)
+    {
+        $instagram = $this->socialWall->getNetwork('instagram');
+        $config    = $this->config['social_networks']['instagram'];
+
+        if (!$tag && !(isset($config['tag']) && ($tag = $config['tag']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "tag". You must pass this parameter to the method or add it to the "tag" configuration option for instagram.'
+            );
+        }
+
+        $results = $instagram->getItemsForTag(
+            array(
+                'tag'   => $tag,
+                'limit' => null !== $limit ? $limit : $config['limit'],
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getInstagramNumberOfItems($userId = null)
+    {
+        $instagram = $this->socialWall->getNetwork('instagram');
+        $config    = $this->config['social_networks']['instagram'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for instagram.'
+            );
+        }
+
+        return $instagram->getNumberOfItems(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getInstagramNumberOfSubscribers($userId = null)
+    {
+        $instagram = $this->socialWall->getNetwork('instagram');
+        $config    = $this->config['social_networks']['instagram'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for instagram.'
+            );
+        }
+
+        return $instagram->getNumberOfSubscribers(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $userId
+     * @param int    $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getGooglePlusItems($userId = null, $limit = null)
+    {
+        $googlePlus = $this->socialWall->getNetwork('google_plus');
+        $config     = $this->config['social_networks']['google_plus'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for google_plus.'
+            );
+        }
+
+        $results = $googlePlus->getItemsForUser(
+            array(
+                'user_id' => $userId,
+                'limit'   => null !== $limit ? $limit : $config['limit'],
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getGooglePlusNumberOfSubscribers($userId = null)
+    {
+        $googlePlus = $this->socialWall->getNetwork('google_plus');
+        $config     = $this->config['social_networks']['google_plus'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for google_plus.'
+            );
+        }
+
+        return $googlePlus->getNumberOfSubscribers(
+            array(
+                'user_id' => $userId,
+            )
+        );
+    }
+
+    /**
+     * @param string $channelId
+     * @param int    $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getYoutubeItemsForChannel($channelId = null, $limit = null)
     {
         $youtube = $this->socialWall->getNetwork('youtube');
         $config  = $this->config['social_networks']['youtube'];
-        $results = $youtube->getSocialItems(
+
+        if (!$channelId && !(isset($config['channel_id']) && ($channelId = $config['channel_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "channel_id". You must pass this parameter to the method or add it to the "channel_id" configuration option for youtube.'
+            );
+        }
+
+        $results = $youtube->getItemsForUser(
             array(
-                'playlistId' => $config['query'],
+                'channelId' => $channelId,
+                'limit'     => null !== $limit ? $limit : $config['limit'],
+            )
+        );
+
+        return $this->getItems($results, $limit);
+    }
+
+    /**
+     * @param null $limit
+     *
+     * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
+     */
+    public function getYoutubeItemsForPlaylist($playlistId = null, $limit = null)
+    {
+        $youtube = $this->socialWall->getNetwork('youtube');
+        $config  = $this->config['social_networks']['youtube'];
+
+        if (!$playlistId && !(isset($config['playlist_id']) && ($playlistId = $config['playlist_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "playlist_id". You must pass this parameter to the method or add it to the "playlist_id" configuration option for youtube.'
+            );
+        }
+
+        $results = $youtube->getItemsForTag(
+            array(
+                'playlistId' => $playlistId,
                 'limit'      => null !== $limit ? $limit : $config['limit'],
             )
         );
@@ -152,29 +517,27 @@ class SocialWallManager
     }
 
     /**
-     * @param string $networkName
-     * @param null   $limit
+     * @param string $userId
      *
      * @return array
+     * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getItemsForNetwork($networkName, $limit = null)
+    public function getYoutubeNumberOfSubscribers($userId = null)
     {
-        switch ($networkName) {
-            case 'facebook':
-                return $this->getFacebookItems($limit);
-            case 'twitter':
-                return $this->getTwitterItems($limit);
-            case 'instagram':
-                return $this->getInstagramItems($limit);
-            case 'flickr':
-                return $this->getFlickrItems($limit);
-            case 'google_plus':
-                return $this->getGooglePlusItems($limit);
-            case 'youtube':
-                return $this->getYoutubeItems($limit);
+        $youtube = $this->socialWall->getNetwork('youtube');
+        $config  = $this->config['social_networks']['youtube'];
+
+        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+            throw new InvalidConfigurationException(
+                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for youtube.'
+            );
         }
 
-        return array();
+        return $youtube->getNumberOfSubscribers(
+            array(
+                'user_id' => $userId,
+            )
+        );
     }
 
     /**
