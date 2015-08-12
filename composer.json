@@ -24,7 +24,7 @@
   "target-dir": "C2is/Bundle/SocialWallBundle",
   "minimum-stability": "stable",
   "require": {
-    "c2is/socialwall": "~3.0"
+    "c2is/socialwall": "~2.0"
   },
   "extra": {
     "branch-alias": {
