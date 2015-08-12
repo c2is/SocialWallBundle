@@ -22,7 +22,7 @@
     "psr-0": { "C2is\\Bundle\\SocialWallBundle": "" }
   },
   "target-dir": "C2is/Bundle/SocialWallBundle",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "require": {
     "c2is/socialwall": "~3.0"
   },
