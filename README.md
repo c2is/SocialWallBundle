@@ -34,7 +34,7 @@ Configuration reference
 
                 # Used to fetch posts and number of followers of a specific user
                 user_id:              ~ # Required
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~
@@ -43,9 +43,12 @@ Configuration reference
                 # Used to fetch posts with the given tags
                 tags:                 []
 
-                # Used to fetch posts number of followers of a specific user
+                # Used to fetch tweets from a specific user
+                user:              ~
+
+                # Used to fetch number of tweets and number of followers of a specific user
                 user_id:              ~
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~
@@ -56,7 +59,7 @@ Configuration reference
 
                 # Used to fetch posts number of followers of a specific user
                 user_id:              ~
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~
@@ -67,7 +70,7 @@ Configuration reference
 
                 # Used to fetch posts number of followers of a specific user
                 user_id:              ~
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~
@@ -75,7 +78,7 @@ Configuration reference
 
                 # Used to fetch posts number of followers of a specific user
                 user_id:              ~ # Required
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~
@@ -86,7 +89,7 @@ Configuration reference
 
                 # Used to fetch posts number of followers of a specific playlist
                 playlist_id:          ~
-                limit:                '50'
+                limit:                50
                 api:
                     api_key:              ~ # Required
                     api_secret:           ~

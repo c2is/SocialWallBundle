@@ -96,26 +96,26 @@ class SocialWallManager
     }
 
     /**
-     * @param string $userId
+     * @param string $user
      * @param int    $limit
      *
      * @return array
      * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
-    public function getTwitterItemsForUser($userId = null, $limit = null)
+    public function getTwitterItemsForUser($user = null, $limit = null)
     {
         $twitter = $this->socialWall->getNetwork('twitter');
         $config  = $this->config['social_networks']['twitter'];
 
-        if (!$userId && !(isset($config['user_id']) && ($userId = $config['user_id']))) {
+        if (!$user && !(isset($config['user']) && ($user = $config['user']))) {
             throw new InvalidConfigurationException(
-                'Missing required parameter "user_id". You must pass this parameter to the method or add it to the "user_id" configuration option for twitter.'
+                'Missing required parameter "user". You must pass this parameter to the method or add it to the "user" configuration option for twitter.'
             );
         }
 
         $results = $twitter->getItemsForUser(
             array(
-                'user_id' => $userId,
+                'user'    => $user,
                 'limit'   => null !== $limit ? $limit : $config['limit'],
                 'lang'    => 'fr',
             )
