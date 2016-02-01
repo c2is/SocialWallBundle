@@ -128,6 +128,9 @@ Available methods:
   If userId is omitted, uses the value defined in the configuration.
   Returns the number of people who liked the facebook page of the user *$userId*.
 
+    0 => test,
+    1 => test,
+
 Twitter
 -------
 
