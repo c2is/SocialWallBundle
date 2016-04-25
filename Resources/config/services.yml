@@ -9,7 +9,7 @@ services:
         arguments: [%c2is_social_wall%]
     c2is.social_wall.manager:
         class: %c2is.social_wall.manager.class%
-        arguments: [@c2is.social_wall, @c2is.social_wall.cache_provider, %c2is_social_wall%]
+        arguments: ["@c2is.social_wall", "@c2is.social_wall.cache_provider", %c2is_social_wall%]
     c2is.social_wall.cache_provider:
         class: %c2is.social_wall.cache_provider.class%
         arguments: ['%kernel.cache_dir%/socialwall/', %c2is_social_wall.cache.duration%]
