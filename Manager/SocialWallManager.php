@@ -36,10 +36,20 @@ class SocialWallManager
             $networkName      = $key;
             $networkApiKey    = $networkConf['api']['api_key'];
             $networkApiSecret = isset($networkConf['api']['api_secret']) ? $networkConf['api']['api_secret'] : null;
-            $this->socialWall->initiateNetwork($networkName, $networkApiKey, $networkApiSecret);
+            $redirectUri      = isset($networkConf['api']['redirect_uri']) ? $networkConf['api']['redirect_uri'] : null;
+            $this->socialWall->initiateNetwork($networkName, $networkApiKey, $networkApiSecret, $redirectUri);
         }
 
         $this->socialWall->setCacheProvider($cacheProvider);
+    }
+
+    /**
+     * @param string $name
+     * @param string $accessToken
+     */
+    public function authenticateNetwork($name, $accessToken)
+    {
+        $this->socialWall->authenticateNetwork($name, $accessToken);
     }
 
     /**

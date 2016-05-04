@@ -1,0 +1,61 @@
+C2is\Bundle\SocialWallBundle\Model\SocialItem:
+    type: mappedSuperclass
+    table: social_item
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        socialId:
+            type: string
+            length: 255
+            nullable: false
+        type:
+            type: string
+            length: 255
+            nullable: true
+        title:
+            type: string
+            length: 1000
+            nullable: true
+        link:
+            type: string
+            length: 2000
+            nullable: true
+        latitude:
+            type: float
+            nullable: true
+        longitude:
+            type: float
+            nullable: true
+        likes:
+            type: integer
+            nullable: true
+        comments:
+            type: integer
+            nullable: true
+        publishedAt:
+            type: datetime
+            nullable: true
+    manyToOne:
+        user:
+            targetEntity: C2is\Bundle\SocialWallBundle\Model\SocialUser
+            cascade: ["persist", "merge"]
+            inversedBy: items
+            joinColumn:
+                name: social_user_id
+                referencedColumnName: id
+                onDelete: CASCADE
+    oneToMany:
+        medias:
+            targetEntity: C2is\Bundle\SocialWallBundle\Model\Media
+            cascade: ["persist", "merge"]
+            mappedBy: item
+    manyToMany:
+        tags:
+            targetEntity: C2is\Bundle\SocialWallBundle\Model\Tag
+            cascade: ["persist", "merge"]
+            inversedBy: items
+            joinTable:
+                name: social_item_tag

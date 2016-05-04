@@ -1,0 +1,38 @@
+C2is\Bundle\SocialWallBundle\Model\Media:
+    type: mappedSuperclass
+    table: social_media
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: string
+            length: 255
+            nullable: true
+        link:
+            type: string
+            length: 2000
+            nullable: true
+        width:
+            type: integer
+            nullable: true
+        height:
+            type: integer
+            nullable: true
+    manyToOne:
+        item:
+            targetEntity: C2is\Bundle\SocialWallBundle\Model\SocialItem
+            inversedBy: medias
+            joinColumn:
+                name: social_item_id
+                referencedColumnName: id
+                onDelete: CASCADE
+    oneToOne:
+        user:
+            targetEntity: C2is\Bundle\SocialWallBundle\Model\SocialUser
+            joinColumn:
+                name: social_user_id
+                referencedColumnName: id
+                onDelete: CASCADE

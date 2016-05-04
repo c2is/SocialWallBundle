@@ -25,6 +25,14 @@ class C2isSocialWallExtension extends Extension
         $container->setParameter('c2is_social_wall', $config);
         $container->setParameter('c2is_social_wall.cache.duration', $config['cache']['duration']);
 
+        $container->setParameter('c2is_social_wall.model_configuration', $config['model']);
+        $container->setParameter('c2is_social_wall.persistence_type_orm', false);
+
+        if ($config['persistence']['orm']['enabled']) {
+            $container->setParameter('c2is_social_wall.persistence_type_orm', true);
+            $container->setParameter('c2is_social_wall.persistence.orm.manager_name', $config['persistence']['orm']['manager_name']);
+        }
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

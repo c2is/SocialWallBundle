@@ -2,6 +2,10 @@
 
 namespace C2is\Bundle\SocialWallBundle\DependencyInjection;
 
+use C2is\Bundle\SocialWallBundle\Model\SocialItem;
+use C2is\Bundle\SocialWallBundle\Model\SocialUser;
+use C2is\Bundle\SocialWallBundle\Model\Media;
+use C2is\Bundle\SocialWallBundle\Model\Tag;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -23,6 +27,31 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('persistence')
+                    ->addDefaultsIfNotSet()
+                    ->validate()
+                        ->ifTrue(function ($v) { return count(array_filter($v, function ($persistence) { return $persistence['enabled']; })) > 1; })
+                        ->thenInvalid('Only one persistence layer can be enabled at the same time.')
+                    ->end()
+                    ->children()
+                        ->arrayNode('orm')
+                            ->addDefaultsIfNotSet()
+                            ->canBeEnabled()
+                            ->children()
+                                ->scalarNode('manager_name')->defaultNull()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('model')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->append($this->addClassNode('social_item', SocialItem::class))
+                        ->append($this->addClassNode('social_user', SocialUser::class))
+                        ->append($this->addClassNode('social_media', Media::class))
+                        ->append($this->addClassNode('social_tag', Tag::class))
+                    ->end()
+                ->end()
                 ->arrayNode('social_networks')
                     ->treatNullLike(array())
                     ->children()
@@ -133,6 +162,23 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
+    public function addClassNode($name, $class)
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root($name);
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->variableNode('options')->end()
+                ->scalarNode('class')->defaultValue($class)->cannotBeEmpty()->end()
+                ->scalarNode('default_class')->defaultValue($class)->cannotBeEmpty()->cannotBeOverwritten()->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
     public function addApiNode()
     {
         $builder = new TreeBuilder();
@@ -145,6 +191,7 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                 ->end()
                 ->scalarNode('api_secret')->end()
+                ->scalarNode('redirect_uri')->end()
             ->end()
         ;
 

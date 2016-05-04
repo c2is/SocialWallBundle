@@ -13,4 +13,10 @@ services:
     c2is.social_wall.cache_provider:
         class: %c2is.social_wall.cache_provider.class%
         arguments: ['%kernel.cache_dir%/socialwall/', %c2is_social_wall.cache.duration%]
-        
+    c2is.social_wall.orm_metadata_subscriber:
+        class: C2is\Bundle\SocialWallBundle\EventListener\ORMMetadataSubscriber
+        arguments: [%c2is_social_wall.model_configuration%]
+        tags:
+            - { name: doctrine.event_subscriber, priority: 8192 }
+    c2is.social_wall.transformer.social_item:
+        class: C2is\Bundle\SocialWallBundle\Transformer\SocialItemTransformer
