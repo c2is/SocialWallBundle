@@ -16,8 +16,6 @@ class C2isSocialWallBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        parent::build($container);
-
         $modelDir = realpath(__DIR__.'/Resources/config/doctrine/model');
         $mappings = array(
             $modelDir => 'C2is\Bundle\SocialWallBundle\Model',

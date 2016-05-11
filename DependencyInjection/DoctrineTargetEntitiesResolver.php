@@ -39,6 +39,7 @@ class DoctrineTargetEntitiesResolver
             if (version_compare(Version::VERSION, '2.5.0-DEV') < 0) {
                 $resolveTargetEntityListener->addTag('doctrine.event_listener', array('event' => 'loadClassMetadata'));
             } else {
+                var_dump('CA DOIT PASSER ICI SA MERE');
                 $resolveTargetEntityListener->addTag('doctrine.event_subscriber');
             }
         }

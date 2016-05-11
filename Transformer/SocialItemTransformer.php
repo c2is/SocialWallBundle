@@ -51,6 +51,7 @@ class SocialItemTransformer
             $dest->setLongitude($source->getLongitude());
             $dest->setLikes($source->getLikes());
             $dest->setComments($source->getComments());
+            $dest->setType('instagram');
 
             foreach ($source->getImages() as $image) {
                 $dest->addMedia($this->transformInstagramMedia($image));

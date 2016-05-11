@@ -15,7 +15,7 @@ class SocialItem
     /** @var integer @Serializer\Type("integer") */
     protected $id;
 
-    /** @var string @Serializer\Type("string") */
+    /** @var string @Serializer\Type("string") @Serializer\SerializedName("socialId") */
     protected $socialId;
 
     /** @var string @Serializer\Type("string") */
