@@ -319,7 +319,7 @@ class SocialWallManager
      * @param string $userId
      * @param int    $limit
      *
-     * @return array
+     * @return \C2is\Bundle\SocialWallBundle\Model\SocialItem[]
      * @throws \C2is\Bundle\SocialWallBundle\Exception\InvalidConfigurationException
      */
     public function getInstagramItemsForUser($userId = null, $limit = null)
