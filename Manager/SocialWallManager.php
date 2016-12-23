@@ -33,9 +33,9 @@ class SocialWallManager
         $this->config     = $config;
 
         foreach ($this->config['social_networks'] as $key => $networkConf) {
-            $networkName      = $networkConf['name'];
-            $networkApiKey    = $networkConf['api_key'];
-            $networkApiSecret = isset($networkConf['api_secret']) ? $networkConf['api_secret'] : null;
+            $networkName      = $key;
+            $networkApiKey    = $networkConf['api']['api_key'];
+            $networkApiSecret = isset($networkConf['api']['api_secret']) ? $networkConf['api']['api_secret'] : null;
             $this->socialWall->initiateNetwork($networkName, $networkApiKey, $networkApiSecret);
         }
 
