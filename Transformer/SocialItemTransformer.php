@@ -7,7 +7,16 @@ use C2is\Bundle\SocialWallBundle\Model\SocialItem;
 use C2is\Bundle\SocialWallBundle\Model\SocialUser;
 use C2is\Bundle\SocialWallBundle\Model\Tag;
 use C2iS\SocialWall\Instagram\Model\Media as InstagramMedia;
+use C2iS\SocialWall\Facebook\Model\Attachment as FacebookMedia;
+use C2iS\SocialWall\Twitter\Model\Hashtag;
+use C2iS\SocialWall\Twitter\Model\Media as TwitterMedia;
+use C2iS\SocialWall\Youtube\Model\Thumbnail as YoutubeMedia;
+use C2iS\SocialWall\GooglePlus\Model\Attachment as GoogleMedia;
 use C2iS\SocialWall\Instagram\Model\SocialItem as InstagramSocialItem;
+use C2iS\SocialWall\Facebook\Model\SocialItem as FacebookSocialItem;
+use C2iS\SocialWall\Twitter\Model\SocialItem as TwitterSocialItem;
+use C2iS\SocialWall\Youtube\Model\SocialItem as YoutubeSocialItem;
+use C2iS\SocialWall\Flickr\Model\SocialItem as FlickrSocialItem;
 use C2iS\SocialWall\Model\AbstractSocialItem;
 use C2iS\SocialWall\Model\SocialUserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,21 +53,91 @@ class SocialItemTransformer
         $dest->setLikes($source->getFollowers());
         $dest->setLink($source->getLink());
         $dest->setTitle($source->getTitle());
-        $dest->setType($source->getSocialItemType());
+        $dest->setMessage($source->getMessageHtml());
+        $dest->setType($source->getSocialNetwork());
+
+        if ($source->getUser() && !$dest->getUser()) {
+            $dest->setUser($this->transformUser($source->getUser()));
+        }
 
         if ($source instanceof InstagramSocialItem) {
             $dest->setLatitude($source->getLatitude());
             $dest->setLongitude($source->getLongitude());
-            $dest->setLikes($source->getLikes());
-            $dest->setComments($source->getComments());
-            $dest->setType('instagram');
+            $dest->setLikes(count($source->getLikes()));
+            $dest->setComments(count($source->getComments()));
 
-            foreach ($source->getImages() as $image) {
-                $dest->addMedia($this->transformInstagramMedia($image));
+            if (!$dest->getMedias()->count()) {
+                foreach ($source->getImages() as $image) {
+                    $dest->addMedia($this->transformInstagramMedia($image));
+                }
+
+                foreach ($source->getVideos() as $video) {
+                    $dest->addMedia($this->transformInstagramMedia($video));
+                }
             }
 
-            foreach ($source->getVideos() as $video) {
-                $dest->addMedia($this->transformInstagramMedia($video));
+            if (!$dest->getTags()->count()) {
+                foreach ($source->getTags() as $tag) {
+                    $dest->addTag($this->transformInstagramTag($tag));
+                }
+            }
+        }
+
+        if ($source instanceof FacebookSocialItem) {
+            $dest->setLikes(count($source->getLikes()));
+            $dest->setComments(count($source->getComments()));
+
+            if (!$dest->getMedias()->count()) {
+                foreach ($source->getImages() as $image) {
+                    $dest->addMedia($this->transformFacebookMedia($image));
+                }
+            }
+        }
+
+        if ($source instanceof TwitterSocialItem) {
+            $dest->setLikes($source->getFavoriteCount());
+            $dest->setComments(count($source->getReply()));
+
+            if (!$dest->getMedias()->count()) {
+                foreach ($source->getMedias() as $image) {
+                    $dest->addMedia($this->transformTwitterMedia($image));
+                }
+            }
+
+            if (!$dest->getTags()->count()) {
+                foreach ($source->getHashtags() as $tag) {
+                    $dest->addTag($this->transformTwitterTag($tag));
+                }
+            }
+        }
+
+        if ($source instanceof YoutubeSocialItem) {
+            $dest->setLikes($source->getLikes());
+            $dest->setComments($source->getComments());
+
+            if (!$dest->getMedias()->count()) {
+                foreach ($source->getThumbnails() as $image) {
+                    $dest->addMedia($this->transformYoutubeMedia($image));
+                }
+            }
+        }
+
+        if ($source instanceof GoogleSocialItem) {
+            $dest->setLikes($source->getPlusOners());
+            $dest->setComments($source->getReplies());
+
+            if (!$dest->getMedias()->count()) {
+                foreach ($source->getAttachments() as $image) {
+                    $dest->addMedia($this->transformGoogleMedia($image));
+                }
+            }
+        }
+
+        if ($source instanceof FlickrSocialItem) {
+            if (!$dest->getMedias()->count()) {
+                $dest->addMedia($media = new Media());
+                $media->setType('image');
+                $media->setLink($source->getUrl());
             }
         }
 
@@ -85,7 +164,7 @@ class SocialItemTransformer
     }
 
     /**
-     * @param InstagramMedia                            $source
+     * @param \C2iS\SocialWall\Instagram\Model\Media    $source
      * @param \C2is\Bundle\SocialWallBundle\Model\Media $dest
      *
      * @return \C2is\Bundle\SocialWallBundle\Model\Media
@@ -105,6 +184,82 @@ class SocialItemTransformer
     }
 
     /**
+     * @param \C2iS\SocialWall\Facebook\Model\Attachment     $source
+     * @param \C2is\Bundle\SocialWallBundle\Model\Media|null $dest
+     *
+     * @return \C2is\Bundle\SocialWallBundle\Model\Media
+     */
+    public function transformFacebookMedia(FacebookMedia $source, Media $dest = null)
+    {
+        if (null === $dest) {
+            $dest = new Media();
+        }
+
+        $dest->setLink($source->getUrl());
+        $dest->setHeight($source->getHeight());
+        $dest->setWidth($source->getWidth());
+        $dest->setType($source->getType());
+
+        return $dest;
+    }
+
+    /**
+     * @param \C2iS\SocialWall\Twitter\Model\Media           $source
+     * @param \C2is\Bundle\SocialWallBundle\Model\Media|null $dest
+     *
+     * @return \C2is\Bundle\SocialWallBundle\Model\Media
+     */
+    public function transformTwitterMedia(TwitterMedia $source, Media $dest = null)
+    {
+        if (null === $dest) {
+            $dest = new Media();
+        }
+
+        $dest->setLink($source->getMediaSecureUrl());
+        $dest->setType($source->getType());
+
+        return $dest;
+    }
+
+    /**
+     * @param \C2iS\SocialWall\Youtube\Model\Thumbnail       $source
+     * @param \C2is\Bundle\SocialWallBundle\Model\Media|null $dest
+     *
+     * @return \C2is\Bundle\SocialWallBundle\Model\Media
+     */
+    public function transformYoutubeMedia(YoutubeMedia $source, Media $dest = null)
+    {
+        if (null === $dest) {
+            $dest = new Media();
+        }
+
+        $dest->setLink($source->getUrl());
+        $dest->setWidth($source->getWidth());
+        $dest->setHeight($source->getHeight());
+        $dest->setType('image"');
+
+        return $dest;
+    }
+
+    /**
+     * @param \C2iS\SocialWall\GooglePlus\Model\Attachment   $source
+     * @param \C2is\Bundle\SocialWallBundle\Model\Media|null $dest
+     *
+     * @return \C2is\Bundle\SocialWallBundle\Model\Media
+     */
+    public function transformGoogleMedia(GoogleMedia $source, Media $dest = null)
+    {
+        if (null === $dest) {
+            $dest = new Media();
+        }
+
+        $dest->setLink($source->getImage());
+        $dest->setType('image"');
+
+        return $dest;
+    }
+
+    /**
      * @param string                                  $source
      * @param \C2is\Bundle\SocialWallBundle\Model\Tag $dest
      *
@@ -117,6 +272,23 @@ class SocialItemTransformer
         }
 
         $dest->setName($source);
+
+        return $dest;
+    }
+
+    /**
+     * @param \C2is\SocialWall\Twitter\Model\Hashtag  $source
+     * @param \C2is\Bundle\SocialWallBundle\Model\Tag $dest
+     *
+     * @return \C2is\Bundle\SocialWallBundle\Model\Tag
+     */
+    public function transformTwitterTag(Hashtag $source, Tag $dest = null)
+    {
+        if (null === $dest) {
+            $dest = new Tag();
+        }
+
+        $dest->setName($source->getText());
 
         return $dest;
     }

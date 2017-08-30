@@ -25,6 +25,9 @@ class SocialItem
     protected $title;
 
     /** @var string @Serializer\Type("string") */
+    protected $message;
+
+    /** @var string @Serializer\Type("string") */
     protected $link;
 
     /** @var double @Serializer\Type("double") */
@@ -136,6 +139,26 @@ class SocialItem
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return $this
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
 
         return $this;
     }

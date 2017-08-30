@@ -1,6 +1,9 @@
 C2is\Bundle\SocialWallBundle\Model\SocialItem:
     type: mappedSuperclass
     table: social_item
+    options:
+        collate: utf8mb4_unicode_ci
+        charset: utf8mb4
     id:
         id:
             type: integer
@@ -18,6 +21,9 @@ C2is\Bundle\SocialWallBundle\Model\SocialItem:
         title:
             type: string
             length: 1000
+            nullable: true
+        message:
+            type: text
             nullable: true
         link:
             type: string
@@ -52,11 +58,13 @@ C2is\Bundle\SocialWallBundle\Model\SocialItem:
             targetEntity: C2is\Bundle\SocialWallBundle\Model\Media
             cascade: ["persist", "merge"]
             mappedBy: item
+            fetch: EXTRA_LAZY
     manyToMany:
         tags:
             targetEntity: C2is\Bundle\SocialWallBundle\Model\Tag
             cascade: ["persist", "merge"]
             inversedBy: items
+            fetch: EXTRA_LAZY
             joinTable:
                 name: social_item_tag
                 joinColumns:
