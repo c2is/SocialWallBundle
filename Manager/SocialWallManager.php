@@ -257,7 +257,7 @@ class SocialWallManager
             );
         }
 
-        $results = $flickr->getItemsForUser(
+        $results = $flickr->getItemsForTag(
             array(
                 'tags'  => $tags,
                 'limit' => null !== $limit ? $limit : $config['limit'],
